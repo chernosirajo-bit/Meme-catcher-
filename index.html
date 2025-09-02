@@ -3,223 +3,676 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meme Catcher</title>
+    <title>Pump.fun Trending Dashboard</title>
     <style>
-        /* LOGIN SCREEN STYLES */
-        #login-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        :root {
+            --primary: #8c52ff;
+            --secondary: #5e17eb;
+            --accent: #ff38e1;
+            --background: #0a0416;
+            --card-bg: #160c2e;
+            --text: #ffffff;
+            --text-secondary: #b8b0cc;
+            --profit: #00ff88;
+            --loss: #ff396f;
+            --border: #2a1a4f;
         }
-        .login-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .login-box input {
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 80%;
-        }
-        .login-box button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* HIDE THE MAIN APP INITIALLY */
-        #main-app {
-            display: none;
-        }
-
-        /* REST OF YOUR ORIGINAL STYLES */
-        body {
-            font-family: Arial, sans-serif;
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
+            padding: 0;
         }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
         .container {
-            max-width: 800px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        h1 {
-            color: #333;
-            text-align: center;
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
         }
-        .coin {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            background-color: #fafafa;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--accent), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        .coin.going-crazy {
-            background-color: #fff3cd;
-            border-color: #ffeaa7;
-            animation: pulse 1s infinite;
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
-        @keyframes pulse {
-            0% { background-color: #fff3cd; }
-            50% { background-color: #ffeaa7; }
-            100% { background-color: #fff3cd; }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
         }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(140, 82, 255, 0.3);
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        
+        .positive {
+            color: var(--profit);
+        }
+        
+        .negative {
+            color: var(--loss);
+        }
+        
+        .coins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .coin-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        
+        .coin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(140, 82, 255, 0.2);
+        }
+        
+        .coin-header {
+            padding: 20px;
+            background: linear-gradient(45deg, rgba(140, 82, 255, 0.1), rgba(94, 23, 235, 0.1));
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .coin-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .coin-name-wrapper {
+            flex: 1;
+        }
+        
+        .coin-name {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        
+        .coin-symbol {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .coin-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .coin-content {
+            padding: 20px;
+        }
+        
+        .price-change {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .metric {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 12px;
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        .metric-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .creator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .creator-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .creator-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .creator-role {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+        
+        .trending-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(45deg, var(--accent), var(--primary));
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .pump-score {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .score-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+        
+        .social-activity {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .social-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px;
-            background-color: #4CAF50;
+            padding: 15px 20px;
+            background: var(--card-bg);
             color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            display: none;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pumping {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(140, 82, 255, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(140, 82, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(140, 82, 255, 0); }
+        }
+        
+        @media (max-width: 900px) {
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .coins-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- PASSWORD LOGIN SCREEN -->
-    <div id="login-screen">
-        <div class="login-box">
-            <h2>Enter Password</h2>
-            <input type="password" id="password-input" placeholder="Password">
-            <br>
-            <button onclick="checkPassword()">Enter</button>
-            <p id="error-msg" style="color: red; display: none;">Incorrect password.</p>
-        </div>
-    </div>
-
-    <!-- YOUR MAIN WEBSITE (HIDDEN UNTIL PASSWORD IS ENTERED) -->
-    <div id="main-app">
-        <div class="container">
-            <h1>Meme Catcher</h1>
-            <div id="coins-container">
-                <!-- Coins will be displayed here -->
+    <div class="container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">P</div>
+                <div>Pump.fun Dashboard</div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" id="refresh-btn">
+                    ↻ Refresh
+                </button>
+                <button class="btn btn-outline">
+                    ⚡ Connect Wallet
+                </button>
+            </div>
+        </header>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Total Market Cap</div>
+                <div class="stat-value">$142.6M</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">24h Volume</div>
+                <div class="stat-value">$38.2M</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">New Pumps (24h)</div>
+                <div class="stat-value">327</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Avg. ROI</div>
+                <div class="stat-value positive">+284%</div>
             </div>
         </div>
-
-        <div id="notification" class="notification">
-            <!-- Notification content -->
+        
+        <h2 style="margin-bottom: 20px; font-size: 1.5rem;">🔥 Trending Now on Pump.fun</h2>
+        
+        <div class="coins-grid" id="coins-container">
+            <!-- Coins will be loaded here -->
+            <div class="loader"></div>
         </div>
     </div>
 
     <script>
-        // === PASSWORD CHECK FUNCTION ===
-        // THE PASSWORD IS: G@m20bia23
-        const correctPassword = "G@m20bia23";
-
-        function checkPassword() {
-            const input = document.getElementById('password-input').value;
-            const errorMsg = document.getElementById('error-msg');
-
-            if (input === correctPassword) {
-                // Password is correct, hide login and show app
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-                // Start your main app functions
-                initializeApp();
-            } else {
-                // Password is wrong, show error
-                errorMsg.style.display = 'block';
+        // Sample data for trending Pump.fun coins
+        const trendingCoins = [
+            {
+                id: "mog",
+                name: "Mog Coin",
+                symbol: "MOG",
+                price: 0.00000284,
+                change: 142.6,
+                liquidity: 1242000,
+                marketCap: 28600000,
+                holders: 42800,
+                creator: {
+                    name: "CryptoCrusader",
+                    role: "Top 1% Creator"
+                },
+                pumpScore: 92,
+                socialStats: {
+                    tweets: 1242,
+                    mentions: 856
+                },
+                trending: true,
+                pumping: true
+            },
+            {
+                id: "ponke",
+                name: "Ponke",
+                symbol: "PONKE",
+                price: 0.00000127,
+                change: 87.3,
+                liquidity: 856000,
+                marketCap: 15200000,
+                holders: 31200,
+                creator: {
+                    name: "DegenArtist",
+                    role: "Verified Creator"
+                },
+                pumpScore: 84,
+                socialStats: {
+                    tweets: 856,
+                    mentions: 612
+                },
+                trending: true,
+                pumping: true
+            },
+            {
+                id: "toshi",
+                name: "Toshi",
+                symbol: "TOSHI",
+                price: 0.00000092,
+                change: 64.2,
+                liquidity: 642000,
+                marketCap: 9800000,
+                holders: 22800,
+                creator: {
+                    name: "BaseBuilder",
+                    role: "Rising Creator"
+                },
+                pumpScore: 76,
+                socialStats: {
+                    tweets: 612,
+                    mentions: 428
+                },
+                trending: true,
+                pumping: false
+            },
+            {
+                id: "brett",
+                name: "Brett",
+                symbol: "BRETT",
+                price: 0.00000152,
+                change: 45.8,
+                liquidity: 735000,
+                marketCap: 12400000,
+                holders: 26500,
+                creator: {
+                    name: "MemeMaster",
+                    role: "Top 5% Creator"
+                },
+                pumpScore: 81,
+                socialStats: {
+                    tweets: 735,
+                    mentions: 522
+                },
+                trending: true,
+                pumping: true
+            },
+            {
+                id: "based",
+                name: "Based",
+                symbol: "BASED",
+                price: 0.00000076,
+                change: 32.1,
+                liquidity: 428000,
+                marketCap: 6800000,
+                holders: 18400,
+                creator: {
+                    name: "AlphaHunter",
+                    role: "New Creator"
+                },
+                pumpScore: 68,
+                socialStats: {
+                    tweets: 428,
+                    mentions: 312
+                },
+                trending: false,
+                pumping: false
+            },
+            {
+                id: "normie",
+                name: "Normie",
+                symbol: "NORMIE",
+                price: 0.00000321,
+                change: 210.4,
+                liquidity: 1650000,
+                marketCap: 38200000,
+                holders: 54200,
+                creator: {
+                    name: "WhaleWatcher",
+                    role: "Elite Creator"
+                },
+                pumpScore: 96,
+                socialStats: {
+                    tweets: 1650,
+                    mentions: 1242
+                },
+                trending: true,
+                pumping: true
             }
+        ];
+
+        // DOM elements
+        const coinsContainer = document.getElementById('coins-container');
+        const refreshBtn = document.getElementById('refresh-btn');
+
+        // Format numbers with commas
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(2) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toLocaleString('en-US');
         }
 
-        // Allow pressing 'Enter' to submit the password
-        document.getElementById('password-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
+        // Display coins
+        function displayCoins() {
+            coinsContainer.innerHTML = '';
+            
+            trendingCoins.forEach(coin => {
+                const coinElement = document.createElement('div');
+                coinElement.className = 'coin-card';
+                
+                if (coin.pumping) {
+                    coinElement.classList.add('pumping');
+                }
+                
+                coinElement.innerHTML = `
+                    ${coin.trending ? `<div class="trending-badge">🔥 Trending</div>` : ''}
+                    
+                    <div class="coin-header">
+                        <div class="coin-icon">${coin.symbol.charAt(0)}</div>
+                        <div class="coin-name-wrapper">
+                            <div class="coin-name">${coin.name}</div>
+                            <div class="coin-symbol">${coin.symbol}</div>
+                        </div>
+                        <div class="coin-price">$${coin.price.toFixed(8)}</div>
+                    </div>
+                    
+                    <div class="coin-content">
+                        <div class="price-change ${coin.change >= 0 ? 'positive' : 'negative'}" style="background: ${coin.change >= 0 ? 'rgba(0, 255, 136, 0.2)' : 'rgba(255, 57, 111, 0.2)'}">
+                            ${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(1)}%
+                        </div>
+                        
+                        <div class="metrics">
+                            <div class="metric">
+                                <div class="metric-label">Liquidity</div>
+                                <div class="metric-value">$${formatNumber(coin.liquidity)}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Market Cap</div>
+                                <div class="metric-value">$${formatNumber(coin.marketCap)}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Holders</div>
+                                <div class="metric-value">${formatNumber(coin.holders)}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">24h Change</div>
+                                <div class="metric-value ${coin.change >= 0 ? 'positive' : 'negative'}">${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(1)}%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="pump-score">
+                            <div class="metric-label">Pump Score:</div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width: ${coin.pumpScore}%"></div>
+                            </div>
+                            <div class="metric-value">${coin.pumpScore}%</div>
+                        </div>
+                        
+                        <div class="social-activity">
+                            <div class="social-stat">🐦 ${formatNumber(coin.socialStats.tweets)} tweets</div>
+                            <div class="social-stat">💬 ${formatNumber(coin.socialStats.mentions)} mentions</div>
+                        </div>
+                        
+                        <div class="creator">
+                            <div class="creator-avatar">${coin.creator.name.charAt(0)}</div>
+                            <div>
+                                <div class="creator-name">${coin.creator.name}</div>
+                                <div class="creator-role">${coin.creator.role}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                coinsContainer.appendChild(coinElement);
+            });
+        }
+
+        // Simulate data refresh
+        refreshBtn.addEventListener('click', () => {
+            coinsContainer.innerHTML = '<div class="loader"></div>';
+            
+            setTimeout(() => {
+                // Randomly update some values to simulate fresh data
+                trendingCoins.forEach(coin => {
+                    const change = coin.change + (Math.random() * 20 - 10);
+                    coin.change = parseFloat(change.toFixed(1));
+                    
+                    // Randomly toggle pumping status
+                    if (Math.random() > 0.5) {
+                        coin.pumping = !coin.pumping;
+                    }
+                    
+                    // Update price based on change
+                    const changeFactor = 1 + (coin.change / 100);
+                    coin.price = parseFloat((coin.price * changeFactor).toFixed(8));
+                    
+                    // Update social stats
+                    coin.socialStats.tweets += Math.floor(Math.random() * 50);
+                    coin.socialStats.mentions += Math.floor(Math.random() * 30);
+                });
+                
+                displayCoins();
+                
+                // Show notification
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = '✅ Data refreshed from Pump.fun';
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }, 1000);
         });
 
-        // === YOUR ORIGINAL APP CODE ===
-        function initializeApp() {
-            // Sample data structure for coins
-            const coins = [
-                { id: 1, name: "DogeCoin", price: 0.15, change: 2.5, volume: 500000, marketCap: 20000000, accuracy: 85, traderEngagement: 4, goingCrazy: false },
-                { id: 2, name: "Shiba Inu", price: 0.000012, change: -1.2, volume: 300000, marketCap: 5000000, accuracy: 78, traderEngagement: 3, goingCrazy: false },
-                { id: 3, name: "SamoCoin", price: 0.005, change: 35, volume: 150000, marketCap: 1000000, accuracy: 92, traderEngagement: 5, goingCrazy: true }
-            ];
-
-            const coinsContainer = document.getElementById('coins-container');
-            const notification = document.getElementById('notification');
-
-            // Function to display coins
-            function displayCoins() {
-                coinsContainer.innerHTML = '';
-                coins.forEach(coin => {
-                    const coinElement = document.createElement('div');
-                    coinElement.className = coin.goingCrazy ? 'coin going-crazy' : 'coin';
-                    coinElement.innerHTML = `
-                        <h2>${coin.name}</h2>
-                        <p>Price: $${coin.price.toFixed(6)}</p>
-                        <p>Change: <span style="color: ${coin.change >= 0 ? 'green' : 'red'}">${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(2)}%</span></p>
-                        <p>Volume: ${coin.volume.toLocaleString()}</p>
-                        <p>Market Cap: $${coin.marketCap.toLocaleString()}</p>
-                        <p>Accuracy: ${coin.accuracy.toFixed(0)}%</p>
-                        <p>Trader Engagement: ${'★'.repeat(coin.traderEngagement)}${'☆'.repeat(5 - coin.traderEngagement)}</p>
-                        ${coin.goingCrazy ? '<p style="color: red; font-weight: bold;">🚨 Going Crazy!</p>' : ''}
-                    `;
-                    coinsContainer.appendChild(coinElement);
-                });
-            }
-
-            // Function to show a notification
-            function showNotification(message) {
-                notification.textContent = message;
-                notification.style.display = 'block';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 5000);
-            }
-
-            // Check for significant changes and show notifications
-            function checkForNotifications() {
-                coins.forEach(coin => {
-                    if (coin.goingCrazy) {
-                        showNotification(`🚨 ${coin.name} is going crazy! Change: ${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(2)}%`);
-                    }
-                });
-            }
-
-            // Initialize the display
-            displayCoins();
-            checkForNotifications();
-
-            // Simulate real-time updates every 5 seconds
-            setInterval(() => {
-                coins.forEach(coin => {
-                    // Simulate a random price change between -5% and +5%
-                    const change = (Math.random() * 10) - 5;
-                    coin.change = change;
-                    coin.price = coin.price * (1 + change/100);
-                    
-                    // Randomly toggle goingCrazy status for demonstration
-                    if (Math.random() > 0.8) {
-                        coin.goingCrazy = !coin.goingCrazy;
-                    }
-                });
-                displayCoins();
-                checkForNotifications();
-            }, 5000);
-        }
+        // Initial display
+        displayCoins();
     </script>
 </body>
 </html>
