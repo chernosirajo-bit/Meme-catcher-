@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meme Catcher</title>
     <style>
+        /* LOGIN SCREEN STYLES */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-box input {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 80%;
+        }
+        .login-box button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* HIDE THE MAIN APP INITIALLY */
+        #main-app {
+            display: none;
+        }
+
+        /* REST OF YOUR ORIGINAL STYLES */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -54,86 +96,130 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Meme Catcher</h1>
-        <div id="coins-container">
-            <!-- Coins will be displayed here -->
+    <!-- PASSWORD LOGIN SCREEN -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Enter Password</h2>
+            <input type="password" id="password-input" placeholder="Password">
+            <br>
+            <button onclick="checkPassword()">Enter</button>
+            <p id="error-msg" style="color: red; display: none;">Incorrect password.</p>
         </div>
     </div>
 
-    <div id="notification" class="notification">
-        <!-- Notification content -->
+    <!-- YOUR MAIN WEBSITE (HIDDEN UNTIL PASSWORD IS ENTERED) -->
+    <div id="main-app">
+        <div class="container">
+            <h1>Meme Catcher</h1>
+            <div id="coins-container">
+                <!-- Coins will be displayed here -->
+            </div>
+        </div>
+
+        <div id="notification" class="notification">
+            <!-- Notification content -->
+        </div>
     </div>
 
     <script>
-        // Sample data structure for coins
-        const coins = [
-            { id: 1, name: "DogeCoin", price: 0.15, change: 2.5, volume: 500000, marketCap: 20000000, accuracy: 85, traderEngagement: 4, goingCrazy: false },
-            { id: 2, name: "Shiba Inu", price: 0.000012, change: -1.2, volume: 300000, marketCap: 5000000, accuracy: 78, traderEngagement: 3, goingCrazy: false },
-            { id: 3, name: "SamoCoin", price: 0.005, change: 35, volume: 150000, marketCap: 1000000, accuracy: 92, traderEngagement: 5, goingCrazy: true }
-        ];
+        // === PASSWORD CHECK FUNCTION ===
+        // THE PASSWORD IS: G@m20bia23
+        const correctPassword = "G@m20bia23";
 
-        const coinsContainer = document.getElementById('coins-container');
-        const notification = document.getElementById('notification');
+        function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorMsg = document.getElementById('error-msg');
 
-        // Function to display coins
-        function displayCoins() {
-            coinsContainer.innerHTML = '';
-            coins.forEach(coin => {
-                const coinElement = document.createElement('div');
-                coinElement.className = coin.goingCrazy ? 'coin going-crazy' : 'coin';
-                coinElement.innerHTML = `
-                    <h2>${coin.name}</h2>
-                    <p>Price: $${coin.price.toFixed(6)}</p>
-                    <p>Change: <span style="color: ${coin.change >= 0 ? 'green' : 'red'}">${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(2)}%</span></p>
-                    <p>Volume: ${coin.volume.toLocaleString()}</p>
-                    <p>Market Cap: $${coin.marketCap.toLocaleString()}</p>
-                    <p>Accuracy: ${coin.accuracy.toFixed(0)}%</p>
-                    <p>Trader Engagement: ${'★'.repeat(coin.traderEngagement)}${'☆'.repeat(5 - coin.traderEngagement)}</p>
-                    ${coin.goingCrazy ? '<p style="color: red; font-weight: bold;">🚨 Going Crazy!</p>' : ''}
-                `;
-                coinsContainer.appendChild(coinElement);
-            });
+            if (input === correctPassword) {
+                // Password is correct, hide login and show app
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                // Start your main app functions
+                initializeApp();
+            } else {
+                // Password is wrong, show error
+                errorMsg.style.display = 'block';
+            }
         }
 
-        // Function to show a notification
-        function showNotification(message) {
-            notification.textContent = message;
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 5000);
-        }
+        // Allow pressing 'Enter' to submit the password
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
 
-        // Check for significant changes and show notifications
-        function checkForNotifications() {
-            coins.forEach(coin => {
-                if (coin.goingCrazy) {
-                    showNotification(`🚨 ${coin.name} is going crazy! Change: ${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(2)}%`);
-                }
-            });
-        }
+        // === YOUR ORIGINAL APP CODE ===
+        function initializeApp() {
+            // Sample data structure for coins
+            const coins = [
+                { id: 1, name: "DogeCoin", price: 0.15, change: 2.5, volume: 500000, marketCap: 20000000, accuracy: 85, traderEngagement: 4, goingCrazy: false },
+                { id: 2, name: "Shiba Inu", price: 0.000012, change: -1.2, volume: 300000, marketCap: 5000000, accuracy: 78, traderEngagement: 3, goingCrazy: false },
+                { id: 3, name: "SamoCoin", price: 0.005, change: 35, volume: 150000, marketCap: 1000000, accuracy: 92, traderEngagement: 5, goingCrazy: true }
+            ];
 
-        // Initialize the display
-        displayCoins();
-        checkForNotifications();
+            const coinsContainer = document.getElementById('coins-container');
+            const notification = document.getElementById('notification');
 
-        // Simulate real-time updates every 5 seconds
-        setInterval(() => {
-            coins.forEach(coin => {
-                // Simulate a random price change between -5% and +5%
-                const change = (Math.random() * 10) - 5;
-                coin.change = change;
-                coin.price = coin.price * (1 + change/100);
-                
-                // Randomly toggle goingCrazy status for demonstration
-                if (Math.random() > 0.8) {
-                    coin.goingCrazy = !coin.goingCrazy;
-                }
-            });
+            // Function to display coins
+            function displayCoins() {
+                coinsContainer.innerHTML = '';
+                coins.forEach(coin => {
+                    const coinElement = document.createElement('div');
+                    coinElement.className = coin.goingCrazy ? 'coin going-crazy' : 'coin';
+                    coinElement.innerHTML = `
+                        <h2>${coin.name}</h2>
+                        <p>Price: $${coin.price.toFixed(6)}</p>
+                        <p>Change: <span style="color: ${coin.change >= 0 ? 'green' : 'red'}">${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(2)}%</span></p>
+                        <p>Volume: ${coin.volume.toLocaleString()}</p>
+                        <p>Market Cap: $${coin.marketCap.toLocaleString()}</p>
+                        <p>Accuracy: ${coin.accuracy.toFixed(0)}%</p>
+                        <p>Trader Engagement: ${'★'.repeat(coin.traderEngagement)}${'☆'.repeat(5 - coin.traderEngagement)}</p>
+                        ${coin.goingCrazy ? '<p style="color: red; font-weight: bold;">🚨 Going Crazy!</p>' : ''}
+                    `;
+                    coinsContainer.appendChild(coinElement);
+                });
+            }
+
+            // Function to show a notification
+            function showNotification(message) {
+                notification.textContent = message;
+                notification.style.display = 'block';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 5000);
+            }
+
+            // Check for significant changes and show notifications
+            function checkForNotifications() {
+                coins.forEach(coin => {
+                    if (coin.goingCrazy) {
+                        showNotification(`🚨 ${coin.name} is going crazy! Change: ${coin.change >= 0 ? '+' : ''}${coin.change.toFixed(2)}%`);
+                    }
+                });
+            }
+
+            // Initialize the display
             displayCoins();
             checkForNotifications();
-        }, 5000);
+
+            // Simulate real-time updates every 5 seconds
+            setInterval(() => {
+                coins.forEach(coin => {
+                    // Simulate a random price change between -5% and +5%
+                    const change = (Math.random() * 10) - 5;
+                    coin.change = change;
+                    coin.price = coin.price * (1 + change/100);
+                    
+                    // Randomly toggle goingCrazy status for demonstration
+                    if (Math.random() > 0.8) {
+                        coin.goingCrazy = !coin.goingCrazy;
+                    }
+                });
+                displayCoins();
+                checkForNotifications();
+            }, 5000);
+        }
     </script>
 </body>
 </html>
